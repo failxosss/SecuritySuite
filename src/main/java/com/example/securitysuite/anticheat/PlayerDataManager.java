@@ -2,9 +2,9 @@ package com.example.securitysuite.anticheat;
 
 import com.example.securitysuite.SecurityPlugin;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Map;
 
 public class PlayerDataManager {
 
