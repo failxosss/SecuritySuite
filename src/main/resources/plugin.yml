@@ -2,7 +2,7 @@ name: SecuritySuite
 version: '${project.version}'
 main: com.example.securitysuite.SecurityPlugin
 api-version: '1.20'
-author: SecuritySuiteTeam
+author: Failxos
 description: Combined AntiVPN/AntiProxy and modular AntiCheat plugin for Paper.
 folia-supported: false
 load: POSTWORLD
