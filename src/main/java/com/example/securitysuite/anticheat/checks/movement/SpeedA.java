@@ -89,8 +89,8 @@ public class SpeedA implements Check {
         }
 
         try {
-            if (player.getBoots() != null
-                    && player.getBoots().getEnchantments().keySet().stream()
+            if (player.getInventory().getBoots() != null
+                    && player.getInventory().getBoots().getEnchantments().keySet().stream()
                         .anyMatch(e -> e.getKey().getKey().equalsIgnoreCase("soul_speed"))
                     && data.isOnIce() == false) {
                 speed *= SOUL_SPEED_MULTIPLIER;
