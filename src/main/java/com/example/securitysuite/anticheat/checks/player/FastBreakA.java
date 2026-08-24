@@ -65,8 +65,8 @@ public class FastBreakA implements Check {
         if (hardness <= 0) return 50; // unbreakable-ish/instant blocks
 
         double toolMultiplier = toolSpeedMultiplier(tool, block);
-        double hasteMultiplier = player.hasPotionEffect(PotionEffectType.HASTE) ? 1.3 : 1.0;
-        double fatigueMultiplier = player.hasPotionEffect(PotionEffectType.MINING_FATIGUE) ? 0.3 : 1.0;
+        double hasteMultiplier = player.hasPotionEffect(PotionEffectType.FAST_DIGGING) ? 1.3 : 1.0;
+        double fatigueMultiplier = player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) ? 0.3 : 1.0;
 
         double effectiveSpeed = toolMultiplier * hasteMultiplier * fatigueMultiplier;
         double seconds = (hardness * 1.5) / Math.max(0.05, effectiveSpeed);
