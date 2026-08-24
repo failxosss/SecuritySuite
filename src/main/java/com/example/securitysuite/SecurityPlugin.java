@@ -21,7 +21,6 @@ import com.example.securitysuite.listener.InventoryListener;
 import com.example.securitysuite.listener.MovementListener;
 import com.example.securitysuite.listener.PlayerConnectionListener;
 import com.example.securitysuite.listener.WorldStateListener;
-import com.example.securitysuite.license.LicenseManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.security.SecureRandom;
@@ -44,7 +43,6 @@ public final class SecurityPlugin extends JavaPlugin {
     private ViolationManager violationManager;
     private PunishmentManager punishmentManager;
     private SecurityGui securityGui;
-    private LicenseManager licenseManager;
 
     private ExecutorService asyncExecutor;
     private final AtomicLong currentTick = new AtomicLong(0);
@@ -64,16 +62,6 @@ public final class SecurityPlugin extends JavaPlugin {
 
         this.configManager = new ConfigManager(this);
         configManager.load();
-
-        // License check first, before anything else spins up. If it fails,
-        // the plugin does nothing else at all - no listeners, no commands,
-        // no DB connection, no AntiVPN/AntiCheat - it's a no-op until a
-        // valid key is in config.yml and the server is restarted.
-        this.licenseManager = new LicenseManager(this);
-        if (!licenseManager.validate()) {
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
 
         this.salt = loadOrCreateSalt();
 
@@ -168,10 +156,6 @@ public final class SecurityPlugin extends JavaPlugin {
 
     public String getSalt() {
         return salt;
-    }
-
-    public LicenseManager getLicenseManager() {
-        return licenseManager;
     }
 
     public java.util.concurrent.Executor getAsyncExecutor() {
