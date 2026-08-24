@@ -50,7 +50,7 @@ public class NoFallA implements Check {
         if (damageEventFired) return CheckResult.clean();
 
         if (player.hasPotionEffect(PotionEffectType.SLOW_FALLING)
-                || player.hasPotionEffect(PotionEffectType.JUMP_BOOST)
+                || player.hasPotionEffect(PotionEffectType.JUMP)
                 || data.isGliding() || data.isInWater() || data.isOnLadder() || data.isInVehicle()) {
             return CheckResult.clean();
         }
