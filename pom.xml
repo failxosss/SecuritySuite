@@ -81,6 +81,14 @@
 
     <build>
         <finalName>${project.name}-${project.version}</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -91,7 +99,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Shade + relocate bundled deps so they don't clash with other plugins -->
+            <!-- Shade + relocate bundled deps so they don't clash with other plugins.
+                 IMPORTANT: org.sqlite is intentionally NOT relocated - sqlite-jdbc
+                 ships a native (JNI) library whose method bindings are hardcoded to
+                 the org.sqlite.* package path. Relocating it breaks native loading
+                 with an UnsatisfiedLinkError at runtime (see project history). -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -109,10 +121,6 @@
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>com.example.securitysuite.libs.gson</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.sqlite</pattern>
-                                    <shadedPattern>com.example.securitysuite.libs.sqlite</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.mariadb.jdbc</pattern>
