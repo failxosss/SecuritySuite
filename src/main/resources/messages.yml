@@ -1,0 +1,46 @@
+# All player/staff-facing messages. Supports '&' color codes and the
+# placeholders documented next to each entry.
+
+prefix: "&8[&bSecuritySuite&8] &r"
+
+general:
+  no-permission: "&cYou do not have permission to do that."
+  player-only: "&cThis command can only be used by a player."
+  player-not-found: "&cPlayer '%player%' not found."
+  reloaded: "&aConfiguration reloaded."
+  unknown-subcommand: "&cUnknown subcommand. Use /%command% help."
+
+antivpn:
+  kick-vpn: "&cVPN connections are not allowed on this server."
+  kick-proxy: "&cProxy connections are not allowed on this server."
+  kick-hosting: "&cConnections from hosting/datacenter IPs are not allowed."
+  kick-tor: "&cTor exit node connections are not allowed on this server."
+  kick-generic: "&cYour connection was flagged as suspicious (risk: %risk%)."
+  ban-message: "&cBanned: suspicious connection (risk: %risk%, reasons: %reasons%)."
+  tempban-message: "&cTemporarily banned until %expiry%: suspicious connection (risk: %risk%)."
+  staff-notify: "&e%player% &7connected with risk &e%risk% &7(%rating%) — %reasons%"
+  cache-cleared: "&aAntiVPN cache cleared (%count% entries removed)."
+  check-result: "&7%player% &f-> &7VPN: %vpn% &7Proxy: %proxy% &7Hosting: %hosting% &7Tor: %tor% &7Risk: %risk% (%rating%)"
+  provider-unavailable: "&cNo IP intelligence provider was available; falling back to allow-with-log."
+  whitelisted: "&a%player% is whitelisted from AntiVPN checks."
+
+anticheat:
+  alert: "%color%[AntiCheat] &f%player% &7failed &f%check% &8| &7VL: &f%vl% &8| &7Ping: &f%ping%ms &8| &7TPS: &f%tps% &8| &7Confidence: &f%confidence%%%"
+  alerts-enabled: "&aYou will now receive AntiCheat alerts."
+  alerts-disabled: "&7You will no longer receive AntiCheat alerts."
+  verbose-enabled: "&aVerbose AntiCheat output enabled."
+  verbose-disabled: "&7Verbose AntiCheat output disabled."
+  player-info-header: "&8&m----&r &bAntiCheat info: %player% &8&m----"
+  player-info-line: "&7%check%: &fVL %vl% &7(decayed from peak %peak%)"
+  violations-reset: "&aViolations for %player% reset."
+  no-violations: "&7%player% has no recorded violations."
+  checks-list-header: "&8&m----&r &bRegistered checks &8&m----"
+  punishment-broadcast: "%color%[AntiCheat] &f%player% &7was punished (&f%action%&7) after repeated violations across %checks% checks."
+  test-mode-notice: "&e[TEST MODE] Would have applied action &f%action% &eto &f%player%&e (no action actually taken)."
+
+discord:
+  disabled-notice: "&7Discord webhook is disabled in config.yml."
+
+gui:
+  back: "&7« Back"
+  no-data: "&7No data available."

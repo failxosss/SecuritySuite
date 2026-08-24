@@ -1,0 +1,253 @@
+# =========================================================
+#  SecuritySuite configuration
+#  AntiVPN/AntiProxy + AntiCheat combined plugin
+# =========================================================
+
+config-version: 1
+
+# -----------------------------------------------------------------
+# License
+# -----------------------------------------------------------------
+# Required. The plugin does nothing at all - no AntiVPN, no AntiCheat,
+# no commands - until a valid key is set here and the server restarts.
+# You received your key from whoever you purchased SecuritySuite from.
+license:
+  key: ""
+
+# -----------------------------------------------------------------
+# AntiVPN / AntiProxy
+# -----------------------------------------------------------------
+antivpn:
+  enabled: true
+
+  # Checked on join. If a player fails and the action is BAN/KICK,
+  # they are removed before they can interact with the world.
+  check-on-join: true
+
+  # Providers are tried in order until one returns a valid result.
+  # Only enable providers whose Terms of Service you have accepted.
+  # NOTE: real-world accuracy depends entirely on the external provider's
+  # data quality. No provider is 100% accurate; treat results as signals,
+  # not absolute truth.
+  providers:
+    order: ["ip-api", "ipqualityscore", "custom"]
+
+    ip-api:
+      enabled: true
+      # ip-api.com free tier: 45 req/min, no key required for HTTP.
+      # For HTTPS / higher limits you need a paid key.
+      base-url: "http://ip-api.com/json/%IP%?fields=status,message,country,countryCode,isp,org,as,proxy,hosting,query"
+      api-key: ""
+      timeout-ms: 3000
+
+    ipqualityscore:
+      enabled: false
+      base-url: "https://ipqualityscore.com/api/json/ip/%KEY%/%IP%"
+      # DO NOT put real secrets here in source control - use secrets.yml instead.
+      # If secrets.yml provides a key it overrides this value.
+      api-key: ""
+      timeout-ms: 3000
+
+    custom:
+      enabled: false
+      base-url: ""
+      api-key: ""
+      timeout-ms: 3000
+      # JSON field names in the custom API's response, mapped to our model.
+      field-map:
+        vpn: "vpn"
+        proxy: "proxy"
+        hosting: "hosting"
+        tor: "tor"
+        country: "country"
+        asn: "asn"
+        isp: "isp"
+        org: "organization"
+
+  cache:
+    enabled: true
+    ttl-seconds: 86400
+    max-size: 20000
+    # eviction strategy: LRU is the only implemented option currently.
+    eviction: LRU
+
+  whitelist:
+    ips: []
+    players: []
+    uuids: []
+    asns: []
+    # Permission that always bypasses AntiVPN regardless of the list above.
+    bypass-permission: "antivpn.bypass"
+
+  # Risk-score weights. Values are added together, then compared to the
+  # thresholds below to obtain a LOW/MEDIUM/HIGH/CRITICAL rating.
+  scoring:
+    vpn: 40
+    proxy: 35
+    hosting: 25
+    tor: 70
+    datacenter-asn: 20
+    known-abuse-ip: 50
+    country-mismatch: 10
+
+  thresholds:
+    low: 30
+    medium: 60
+    high: 80
+    critical: 100
+
+  # Action taken per detection signal. Values: LOG, KICK, TEMPBAN, BAN, COMMAND, NOTIFY
+  # Multiple actions can be combined with a comma-separated list, e.g. "NOTIFY,KICK".
+  actions:
+    vpn: "KICK"
+    proxy: "KICK"
+    tor: "BAN"
+    hosting: "NOTIFY"
+    datacenter: "NOTIFY"
+
+  # Used when action includes TEMPBAN.
+  tempban-duration-minutes: 1440
+
+  # Used when action includes COMMAND. %player% and %uuid% are replaced.
+  action-command: "banip %player% Suspicious connection detected"
+
+# -----------------------------------------------------------------
+# AntiCheat
+# -----------------------------------------------------------------
+anticheat:
+  enabled: true
+
+  checks:
+    combat: true
+    movement: true
+    player: true
+    packet: true
+
+  # Individual checks can be disabled without touching the category flag.
+  disabled-checks: []
+
+  violation-decay:
+    enabled: true
+    # VL points removed per interval.
+    amount: 0.25
+    # seconds between each decay tick.
+    interval-seconds: 5
+
+  # Compensation applied before a check is allowed to flag, to reduce
+  # false positives caused by network conditions and server load.
+  compensation:
+    ping:
+      enabled: true
+      # ms of ping ignored before penalty scaling begins.
+      grace-ms: 100
+      # ms of "compensation window" added to timing-sensitive checks per 100ms of ping.
+      scale-ms-per-100: 50
+      max-compensation-ms: 400
+    tps:
+      enabled: true
+      # below this TPS, movement/timing checks become more lenient.
+      grace-tps: 19.5
+      # multiplier applied to violation thresholds when TPS is below grace-tps.
+      leniency-multiplier: 1.75
+    lag-spike:
+      enabled: true
+      # if the interval between two ticks exceeds this, treat it as a spike
+      # and discard the sample instead of flagging.
+      spike-threshold-ms: 250
+
+  evidence:
+    buffer-size: 20
+
+  punishments:
+    enabled: true
+    # Violation-level thresholds -> action. Evaluated cumulatively per-check-category.
+    thresholds:
+      20:
+        action: ALERT
+      40:
+        action: WARN
+      60:
+        action: KICK
+      100:
+        action: TEMPBAN
+    tempban-duration-minutes: 60
+    # A punishment only fires if at least this many distinct checks
+    # contributed violations within the time window below. This prevents
+    # a single noisy check (or one lag spike) from banning a player outright.
+    min-distinct-checks: 2
+    time-window-seconds: 30
+
+  alerts:
+    enabled: true
+    # broadcast to players with security.alerts permission
+    colors:
+      low: "&a"
+      medium: "&e"
+      high: "&6"
+      critical: "&c"
+
+# -----------------------------------------------------------------
+# Performance
+# -----------------------------------------------------------------
+performance:
+  async-processing: true
+  # soft budget per check invocation; checks exceeding this are logged
+  # (not aborted mid-flight, since Bukkit events are synchronous, but this
+  # tells you which check to optimize/disable on a struggling server).
+  max-check-time-ms: 2
+  # how many players' movement packets are processed per server tick batch.
+  movement-batch-size: 200
+
+# -----------------------------------------------------------------
+# Discord
+# -----------------------------------------------------------------
+discord:
+  enabled: false
+  # Put the webhook URL in secrets.yml instead of here when possible.
+  webhook-url: ""
+  send-antivpn-events: true
+  send-anticheat-events: true
+  # minimum violation level required before an AntiCheat event is sent.
+  anticheat-min-vl: 15
+  username: "SecuritySuite"
+
+# -----------------------------------------------------------------
+# Database
+# -----------------------------------------------------------------
+database:
+  # SQLITE, MYSQL or MARIADB
+  type: SQLITE
+  sqlite:
+    file: "securitysuite.db"
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "securitysuite"
+    username: "securitysuite"
+    # Prefer secrets.yml for the password.
+    password: ""
+    use-ssl: false
+  pool:
+    maximum-pool-size: 6
+    minimum-idle: 1
+    connection-timeout-ms: 5000
+
+# -----------------------------------------------------------------
+# Privacy
+# -----------------------------------------------------------------
+privacy:
+  # If false, raw IPs are never written to the database at all.
+  store-ip: false
+  # If true and store-ip is true, the IP is stored as a salted SHA-256
+  # hash instead of plaintext.
+  hash-ip: true
+  # 0 = keep forever. Otherwise a scheduled task purges rows older than this.
+  data-retention-days: 30
+
+# -----------------------------------------------------------------
+# GUI
+# -----------------------------------------------------------------
+gui:
+  enabled: true
+  title: "&8&lAntiSecurity"
+  size: 27

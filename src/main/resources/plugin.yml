@@ -1,0 +1,56 @@
+name: SecuritySuite
+version: '${project.version}'
+main: com.example.securitysuite.SecurityPlugin
+api-version: '1.20'
+author: SecuritySuiteTeam
+description: Combined AntiVPN/AntiProxy and modular AntiCheat plugin for Paper.
+folia-supported: false
+load: POSTWORLD
+
+commands:
+  security:
+    description: Main SecuritySuite command (GUI, reload, stats, debug, test).
+    usage: /security [reload|stats|performance|debug|test]
+    permission: security.admin
+  antivpn:
+    description: AntiVPN / AntiProxy management command.
+    usage: /antivpn [check|info|clearcache|whitelist] <player>
+    permission: security.antivpn
+  anticheat:
+    aliases: [ac]
+    description: AntiCheat management command.
+    usage: /anticheat [alerts|verbose|info|violations|reset|checks|reload] <player>
+    permission: security.anticheat
+
+permissions:
+  security.*:
+    description: Grants every SecuritySuite permission.
+    default: op
+    children:
+      security.admin: true
+      security.antivpn: true
+      security.anticheat: true
+      security.alerts: true
+      security.verbose: true
+      security.bypass: true
+  security.admin:
+    description: Full admin access to SecuritySuite (GUI, reload, config, stats).
+    default: op
+  security.antivpn:
+    description: Access to /antivpn subcommands.
+    default: op
+  security.anticheat:
+    description: Access to /anticheat (/ac) subcommands.
+    default: op
+  security.alerts:
+    description: Receive AntiCheat and AntiVPN staff alerts.
+    default: op
+  security.verbose:
+    description: Receive verbose (debug-level) AntiCheat check output.
+    default: op
+  antivpn.bypass:
+    description: Bypass all AntiVPN/AntiProxy checks entirely.
+    default: false
+  security.bypass:
+    description: Bypass both AntiVPN and AntiCheat checks entirely.
+    default: false
